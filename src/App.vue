@@ -2,7 +2,7 @@
   <div class="container p-3">
     <div class="card ml-auto mr-auto">
       <div class="card-header d-flex flex-row justify-content-between">
-<!--        <img src="./assets/logo.svg" class="form-header">-->
+        <img src="logo.svg" class="form-header">
         <h1>Police Records Request</h1>
       </div>
       <div class="card-body">
@@ -149,6 +149,11 @@
           </div>
         </div>
         <div v-if="step===3">
+          <div v-if="!reportDetails && !type.nameSearch && !type.premiseHistory"
+               class="alert alert-danger mt-3 p-2">
+            <i class="fas fa-exclamation-triangle fa-lg mr-2"></i>
+            You must choose a type of Request from the previous page.
+          </div>
           <div v-if="reportDetails" class="card mt-1 mb-3">
             <div class="card-header">
               <h4 class="card-title">Report Details</h4>

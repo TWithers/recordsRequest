@@ -2,8 +2,8 @@
   <div class="container p-3">
     <div class="card ml-auto mr-auto">
       <div class="card-header d-flex flex-row justify-content-between">
-        <img src="./assets/logo.svg" class="form-header">
-        <h1>Records Request</h1>
+<!--        <img src="./assets/logo.svg" class="form-header">-->
+        <h1>Police Records Request</h1>
       </div>
       <div class="card-body">
         <nav class="navbar-light bg-light pt-3 pb-3 mb-2">
@@ -80,11 +80,6 @@
                 </div>
                 <div class="form-check">
                   <input type="radio"
-                         name="purpose" class="form-check-input" value="gilbert" v-model="purpose">
-                  Town of Gilbert
-                </div>
-                <div class="form-check">
-                  <input type="radio"
                          name="purpose" class="form-check-input" value="other" v-model="purpose">
                   Other
                 </div>
@@ -154,8 +149,126 @@
           </div>
         </div>
         <div v-if="step===3">
-          <div v-if="reportDetails">
-            Report Details Required
+          <div v-if="reportDetails" class="card mt-1 mb-3">
+            <div class="card-header">
+              <h4 class="card-title">Report Details</h4>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-column">
+                <div class="form-check mb-3">
+                  <input type="checkbox"
+                         name="type" class="form-check-input" v-model="reportNumberUnknown">
+                  Report Number Unknown
+                </div>
+                <div class="d-flex flex-column" v-if="!reportNumberUnknown">
+                  <div class="mb-3">
+                    <label for="reportNumber">Report Number</label>
+                    <input type="text" id="reportNumber" class="form-control">
+                  </div>
+                  <div class="form-check mb-3">
+                    <input type="checkbox"
+                           name="type" class="form-check-input" v-model="additionalReports">
+                    There is more than 1 report number
+                  </div>
+                  <div class="mb-3" v-if="additionalReports">
+                    <label for="additionalReports">Additional Report Number(s)</label>
+                    <input type="text" id="additionalReports" class="form-control">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="time">Approximate Date/Time Reported to Police</label>
+                  <input type="text" id="time" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="location">Incident Location</label>
+                  <input type="text" id="location" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="persons">Persons Involved</label>
+                  <input type="text" id="persons" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="type.nameSearch" class="card mt-1 mb-3">
+            <div class="card-header">
+              <h4 class="card-title">Name Search Information</h4>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-column">
+                <div class="mb-3">
+                  <label for="search">Person to Search</label>
+                  <input type="text" id="search" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="aka">Known/Possible Aliases (AKA)</label>
+                  <input type="text" id="aka" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="birth">Date of Birth</label>
+                  <input type="text" id="birth" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="ssn">Social Security Number</label>
+                  <input type="text" id="ssn" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="type.premiseHistory" class="card mt-1 mb-3">
+            <div class="card-header">
+              <h4 class="card-title">Premise History Information</h4>
+            </div>
+            <div class="card-body">
+              <div class="d-flex flex-column">
+                <div class="mb-3">
+                  <label for="phaddress">Address</label>
+                  <input type="text" id="phaddress" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="from">From Date</label>
+                  <input type="text" id="from" class="form-control">
+                </div>
+                <div class="mb-3">
+                  <label for="to">To Date</label>
+                  <input type="text" id="to" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="step===4">
+          <div class="d-flex flex-column">
+            <h3>Report Delivery</h3>
+            <div class="form-check">
+              <input type="radio"
+                     name="delivery" class="form-check-input" value="email" v-model="delivery">
+              Email Delivery
+            </div>
+            <div class="form-check">
+              <input type="radio"
+                     name="delivery" class="form-check-input" value="mail" v-model="delivery">
+              US Mail
+            </div>
+            <div class="form-check">
+              <input type="radio"
+                     name="delivery" class="form-check-input" value="pickup"
+                     v-model="delivery">
+              In-Person Pickup
+            </div>
+            <div class="mb-3" v-if="delivery==='pickup'">
+              <label for="authorized">Authorized Individuals that can pickup
+                the report on your behalf</label>
+              <input type="text" id="authorized" class="form-control">
+            </div>
+            <div class="alert alert-warning mt-3 p-2">
+              <div class="form-check">
+                <input type="checkbox"
+                       name="final" class="form-check-input">
+                I hereby certify under penalty of perjury that the requested records will not be
+                used for commercial purposes
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -189,6 +302,7 @@ export default {
   name: 'App',
   components: {},
   setup() {
+    const delivery = ref('email');
     const step = ref(1);
     const purpose = ref('public');
     const type = ref({
@@ -201,10 +315,15 @@ export default {
       premiseHistory: false,
       camera: false,
     });
+    const reportNumberUnknown = ref(false);
+    const additionalReports = ref(false);
     const reportDetails = computed(() => type.value.report || type.value.audio || type.value['911'] || type.value.property || type.value.camera);
     return {
+      delivery,
       purpose,
       reportDetails,
+      reportNumberUnknown,
+      additionalReports,
       step,
       type,
     };
